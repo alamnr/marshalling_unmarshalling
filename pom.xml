@@ -1,0 +1,120 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>info.ejava.examples.build</groupId>
+        <artifactId>ejava-build-parent</artifactId>
+        <version>6.1.0-SNAPSHOT</version>
+        <relativePath>build/ejava-build-parent/pom.xml</relativePath>
+    </parent>
+
+
+
+    <groupId>info.ejava.examples</groupId>
+    <artifactId>examples-root</artifactId>
+    <version>6.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>EJava 605.784</name>
+    <description>
+        This project provides the root for all example and exercise source code modules.
+    </description>
+
+    <modules>
+        <module>common</module>
+        <module>svc</module>
+    </modules>
+
+           <url>https://jcs.ep.jhu.edu/ejava-springboot</url>
+
+       <properties>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <maven-project-info-reports-plugin.version>3.1.1</maven-project-info-reports-plugin.version>
+        <asciidoctor-maven-plugin.version>3.0.0</asciidoctor-maven-plugin.version>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+          <dependency>
+              <groupId>info.ejava.examples.build</groupId>
+              <artifactId>ejava-build-bom</artifactId>
+              <version>${project.version}</version>
+              <type>pom</type>
+              <scope>import</scope>
+          </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+            </plugin>
+ 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <generateReports>true</generateReports>
+                    <generateSitemap>true</generateSitemap>
+                    <relativizeDecorationLinks>false</relativizeDecorationLinks>
+                    <locales>en</locales>
+                    <inputEncoding>UTF-8</inputEncoding>
+                    <outputEncoding>UTF-8</outputEncoding>
+                    <!-- site-wide AsciiDoc attributes https://asciidoctor.org/docs/asciidoctor-maven-plugin/#maven-site-integration -->
+                    <asciidoc>
+                        <attributes>
+                            <icons>font</icons>
+                            <source-highlighter>coderay</source-highlighter>
+                            <coderay-css>style</coderay-css>
+                            <toclevels>2</toclevels>
+
+                            <organization>JHU Whiting School of Engineering | Engineering for Professionals</organization>
+                        </attributes>
+                    </asciidoc>
+                    <skip>false</skip>
+                    <skipDeploy>false</skipDeploy>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctor-converter-doxia-module</artifactId>
+                        <version>${asciidoctor-maven-plugin.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <!-- <distributionManagement>
+        <site>
+            <id>ejava.site</id>
+            <url>${site.deploy.url}</url>
+        </site>
+        <repository>
+            <id>ejava.release.repo</id>
+            <name>ejava release repository</name>
+            <url>${repo.release.deploy.url}</url>
+        </repository>
+        <snapshotRepository>
+            <id>ejava.snapshot.repo</id>
+            <name>ejava snapshot repository</name>
+            <url>${repo.snapshot.deploy.url}</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <scm>
+        <url>https://github.com/alamnr/ejava-springboot</url>
+        <connection>scm:git:git@github.com:alamnr/ejava-springboot.git</connection>
+        <developerConnection>scm:git:git@github.com:alamnr/ejava-springboot.git</developerConnection>
+        <tag>@{project.version}</tag>
+    </scm> -->
+
+
+</project>
