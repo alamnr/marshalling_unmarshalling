@@ -16,8 +16,8 @@
         and negotiation.
     </description>
     <modules>
-
         <module>content-quotes-client</module>
+        <module>content-quotes-svc</module>
     </modules>
 
 

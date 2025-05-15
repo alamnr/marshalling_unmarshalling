@@ -41,7 +41,7 @@ public abstract class ClientErrorException extends RuntimeException {
 
     public static class BadRequestException extends ClientErrorException {
 
-        public BadRequestException(String msg, Object[] args) {
+        public BadRequestException(String msg, Object... args) {
             super(msg, args);
             
         }
