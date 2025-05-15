@@ -37,6 +37,14 @@ public class QuotesController {
      * This method provides 2 example method signatures. Use the @RequestBody from when
      * headers are of no interest. Use RequestEntity when headers are of interest
      */
+
+     /*
+      Idempotence describes a characteristic where a repeated event produces the same
+      outcome every time executed. This is a very important concept in distributed systems that commonly have to 
+      implement eventual consistency — where failure recovery can cause unacknowledged commands to be executed multiple times.
+      The idempotent characteristic is independent of method safety. Idempotence only 
+      requires that the same result state be achieved each time called.
+      */
     // Non idempotent http method - POST, PATCH, Connect
     /*
      * The standard convention of Internet protocol is that most methods except for POST 
