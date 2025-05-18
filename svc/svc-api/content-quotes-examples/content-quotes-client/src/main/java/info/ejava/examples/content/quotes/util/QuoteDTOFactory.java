@@ -16,12 +16,12 @@ import info.ejava.examples.content.quotes.dto.QuoteListDTO;
 import net.datafaker.Faker;
 
 public class QuoteDTOFactory {
+    
+    private static final AtomicInteger nextId = new AtomicInteger(1);
+    private final Faker faker = new Faker();
 
-    public static final AtomicInteger nextId = new AtomicInteger(1);
-    public final Faker faker = new Faker();
-
-    public int id() {
-        return faker.number().numberBetween(1, 1000);
+    public int id(){
+        return faker.number().numberBetween(1,1000);
     }
 
     public String author(){
@@ -32,17 +32,11 @@ public class QuoteDTOFactory {
         return faker.hitchhikersGuideToTheGalaxy().quote();
     }
 
-    public LocalDate date(){
+    public LocalDate date() {
         return toDate(faker.date().past(100*365, TimeUnit.DAYS).toInstant());
     }
 
-    public static LocalDate toDate(Instant timeStamp){
-        // remove time information
-        return timeStamp.atOffset(ZoneOffset.UTC)
-                        .toLocalDate();
-    }
-
-    public QuoteDTO make() {
+    public QuoteDTO make(){
         return QuoteDTO.builder()
                         .author(author())
                         .text(text())
@@ -59,6 +53,11 @@ public class QuoteDTOFactory {
 
     public static Consumer<QuoteDTO> oneUpId = o -> o.setId(nextId.getAndAdd(1));
 
+    public static LocalDate toDate(Instant timeStamp){
+        // remove time information
+        return timeStamp.atOffset(ZoneOffset.UTC)
+                        .toLocalDate();
+    }
 
     public QuoteListDTOFactory listBuilder(){
         return new QuoteListDTOFactory();
@@ -87,5 +86,3 @@ public class QuoteDTOFactory {
     }
 
 }
-
-

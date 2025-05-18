@@ -39,17 +39,17 @@ public abstract class ClientErrorException extends RuntimeException {
         super(String.format(msg, args), cause);
     }
 
-    public static class BadRequestException extends ClientErrorException {
+        public static class BadRequestException extends ClientErrorException {
 
-        public BadRequestException(String msg, Object... args) {
-            super(msg, args);
+            public BadRequestException(String msg, Object... args) {
+                super(msg, args);
             
-        }
+            }
 
-        public BadRequestException(Throwable cause , String msg, Object... args) {
-            super(cause,msg,args);
+            public BadRequestException(Throwable cause , String msg, Object... args) {
+                super(cause,msg,args);
+            }
         }
-
         public static class NotFoundException extends ClientErrorException {
             public NotFoundException(String msg, Object... args){
                 super(msg, args);
@@ -74,11 +74,7 @@ public abstract class ClientErrorException extends RuntimeException {
         // 422 - Unprocessable Entity / Invalid Input
         // 401 - Not Authorized
         // 403 - Forbidden
-        // 405 - Unsupprted Media Type
-        // 415 - Not Acceptable
+        // 415 - Unsupprted Media Type
+        // 406 - Not Acceptable
         
-    }
-
-
-
 }

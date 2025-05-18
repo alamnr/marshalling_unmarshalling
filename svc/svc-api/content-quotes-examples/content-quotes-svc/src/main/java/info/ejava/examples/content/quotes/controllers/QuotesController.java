@@ -132,7 +132,7 @@ public class QuotesController {
     
     @RequestMapping(path=QuotesAPI.QUOTE_PATH, method = RequestMethod.GET,
                         produces= {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public  ResponseEntity<QuoteDTO> getQuote(@PathParam("id") int id) {
+    public  ResponseEntity<QuoteDTO> getQuote(@PathVariable("id") int id) {
 
         QuoteDTO quote = quoteService.getQuote(id);
 

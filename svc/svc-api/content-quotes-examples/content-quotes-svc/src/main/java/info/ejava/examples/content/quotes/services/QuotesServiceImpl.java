@@ -12,8 +12,8 @@ import org.springframework.util.StringUtils;
 
 import info.ejava.examples.common.exception.ClientErrorException;
 import info.ejava.examples.common.exception.ClientErrorException.BadRequestException;
-import info.ejava.examples.common.exception.ClientErrorException.BadRequestException.InvalidInputException;
-import info.ejava.examples.common.exception.ClientErrorException.BadRequestException.NotFoundException;
+import info.ejava.examples.common.exception.ClientErrorException.InvalidInputException;
+import info.ejava.examples.common.exception.ClientErrorException.NotFoundException;
 import info.ejava.examples.common.exception.ServerErrorException.InternalServerErrorException;
 import info.ejava.examples.content.quotes.dto.QuoteDTO;
 import info.ejava.examples.content.quotes.dto.QuoteListDTO;
@@ -103,6 +103,19 @@ public class QuotesServiceImpl implements QuoteService {
         }
     }
 
+    /*
+     * Purpose: Returns a paginated list of quotes from an internal collection.
+
+        Parameters:
+
+            offset: Number of elements to skip.
+
+            limit: Maximum number of elements to return. If limit == 0, returns all from offset onward.
+
+        Returns: QuoteListDTO — a data structure containing the paginated quote list.
+
+
+    */
     @Override
     public QuoteListDTO getQuotes(int offset, int limit) {
         validatePaging(offset, limit);

@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import info.ejava.examples.common.exception.ClientErrorException.BadRequestException.InvalidInputException;
-import info.ejava.examples.common.exception.ClientErrorException.BadRequestException.NotFoundException;
+import info.ejava.examples.common.exception.ClientErrorException.InvalidInputException;
+import info.ejava.examples.common.exception.ClientErrorException.NotFoundException;
 import info.ejava.examples.common.exception.ServerErrorException.InternalServerErrorException;
 import info.ejava.examples.content.quotes.dto.MessageDTO;
 import lombok.extern.slf4j.Slf4j;
