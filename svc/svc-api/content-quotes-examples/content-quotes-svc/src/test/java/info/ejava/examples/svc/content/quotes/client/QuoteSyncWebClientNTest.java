@@ -2,16 +2,20 @@ package info.ejava.examples.svc.content.quotes.client;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.BDDAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -20,12 +24,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import info.ejava.examples.content.quotes.QuotesApplication;
 import info.ejava.examples.content.quotes.api.QuotesAPI;
+import info.ejava.examples.content.quotes.dto.MessageDTO;
 import info.ejava.examples.content.quotes.dto.QuoteDTO;
+import info.ejava.examples.content.quotes.dto.QuoteListDTO;
+import info.ejava.examples.content.quotes.util.JsonUtil;
 import info.ejava.examples.content.quotes.util.QuoteDTOFactory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,7 +65,8 @@ public class QuoteSyncWebClientNTest {
     @BeforeEach
     public void setUp() {
         log.info("clearing all gestures");
-        webClient.delete().uri(quotesUrl).retrieve();
+        ResponseEntity<Void> response = webClient.delete().uri(quotesUrl).retrieve().toEntity(Void.class).block();
+        log.info("delete all quotes response status - {}", response.getStatusCode());
     }
 
     @AfterEach
@@ -74,6 +84,24 @@ public class QuoteSyncWebClientNTest {
         }
         return params.stream();
     }
+
+    public MessageDTO getErrorResponse(WebClientResponseException  ex){
+        final String contentTypeValue = ex.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
+        final MediaType contentType = MediaType.valueOf(contentTypeValue);
+        final byte[] bytes = ex.getResponseBodyAsByteArray();
+        if (MediaType.APPLICATION_JSON.equals(contentType)) {
+            return JsonUtil.instance().unmarshal(bytes, MessageDTO.class);
+        } else if (MediaType.APPLICATION_XML.equals(contentType)) {
+            return JsonUtil.instance().unmarshal(bytes, MessageDTO.class);
+        } else {
+            throw new IllegalArgumentException("unknown contentType: " + contentTypeValue);
+        }
+
+
+    }
+
+
+
 
     @ParameterizedTest
     @MethodSource("mediaTypes")
@@ -119,5 +147,80 @@ public class QuoteSyncWebClientNTest {
                                                 
     }
 
+    @Test
+    void get_quote() {
+        // arrange / given - an existing quote
+        QuoteDTO existingDto = quoteDTOFactory.make();
+        ResponseEntity<QuoteDTO> quoteResponse = webClient.post().uri(quotesUrl).bodyValue(existingDto)
+                                                            .retrieve().toEntity(QuoteDTO.class).block();
+        BDDAssertions.assertThat(quoteResponse.getStatusCode().is2xxSuccessful()).isTrue();
 
+        int requestedId = quoteResponse.getBody().getId();
+        URI quoteUrl = UriComponentsBuilder.fromUri(baseUrl).path(QuotesAPI.QUOTE_PATH).build(requestedId);
+        RequestEntity<Void> request = RequestEntity.get(quoteUrl).build();
+
+        // when / act 
+        ResponseEntity<QuoteDTO> response = webClient.get().uri(quoteUrl).retrieve().toEntity(QuoteDTO.class).block();
+
+        // then - evaluate/assert
+        BDDAssertions.then(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        BDDAssertions.then(response.getBody()).isEqualTo(existingDto.withId(requestedId));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings={MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
+    void get_quotes(String mediatypeString){
+
+        // given /arrange
+        MediaType mediaType = MediaType.valueOf(mediatypeString);
+        Map<Integer,QuoteDTO>  existingQuotes = new HashMap<>();
+
+        QuoteListDTO quotes = quoteDTOFactory.listBuilder().make(3, 3);
+        for (QuoteDTO  quoteDTO : quotes.getQuotes()) {
+            
+            ResponseEntity<QuoteDTO> response = webClient.post().uri(quotesUrl).accept(mediaType)
+                                                        .bodyValue(quoteDTO).retrieve().toEntity(QuoteDTO.class).block();
+            BDDAssertions.then(response.getStatusCode().is2xxSuccessful()).isTrue();
+            QuoteDTO addedQuote = response.getBody();
+            existingQuotes.put(addedQuote.getId(), addedQuote);
+            
+        }
+        BDDAssertions.assertThat(existingQuotes).isNotEmpty();
+        URI quotesUri = UriComponentsBuilder.fromUri(baseUrl).path(QuotesAPI.QUOTES_PATH).build().toUri();
+        URI quoteUriWithOffsetAndLimit = UriComponentsBuilder.fromUri(baseUrl)
+                                                                .path(QuotesAPI.QUOTES_PATH)
+                                                                .queryParam("offset", 1)
+                                                                .queryParam("limit", 10)
+                                                                .build().toUri();
+
+        // when
+
+        ResponseEntity<QuoteListDTO> response = webClient.get().uri(quotesUri).retrieve().toEntity(QuoteListDTO.class).block();
+
+        ResponseEntity<QuoteListDTO> responseWithOffsetAndLimit = webClient.get().uri(quoteUriWithOffsetAndLimit)
+                                                                            .retrieve().toEntity(QuoteListDTO.class).block();
+
+        // then / evaluate - assert
+
+        BDDAssertions.then(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        BDDAssertions.then(responseWithOffsetAndLimit.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        QuoteListDTO pageWithoutOffset = response.getBody();
+        QuoteListDTO pageWithOffset = responseWithOffsetAndLimit.getBody();
+
+        BDDAssertions.then(pageWithoutOffset.getOffset()).isEqualTo(0);
+        BDDAssertions.then(pageWithoutOffset.getLimit()).isEqualTo(0);
+        BDDAssertions.then(pageWithOffset.getOffset()).isEqualTo(1);
+        BDDAssertions.then(pageWithOffset.getLimit()).isEqualTo(10);
+
+        BDDAssertions.then(pageWithoutOffset.getCount()).isEqualTo(existingQuotes.size());
+        BDDAssertions.then(pageWithOffset.getCount()).isEqualTo(existingQuotes.size()-1);
+
+        for(QuoteDTO q : pageWithoutOffset.getQuotes()){
+            BDDAssertions.then(existingQuotes.remove(q.getId())).isNotNull();
+        }
+
+        BDDAssertions.then(existingQuotes).isEmpty();
+
+    }
 }

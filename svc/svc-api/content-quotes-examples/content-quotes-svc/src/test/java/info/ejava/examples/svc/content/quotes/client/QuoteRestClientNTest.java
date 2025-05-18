@@ -20,13 +20,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import info.ejava.examples.content.quotes.QuotesApplication;
 import info.ejava.examples.content.quotes.api.QuotesAPI;
+import info.ejava.examples.content.quotes.dto.MessageDTO;
 import info.ejava.examples.content.quotes.dto.QuoteDTO;
+import info.ejava.examples.content.quotes.util.JsonUtil;
 import info.ejava.examples.content.quotes.util.QuoteDTOFactory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,6 +76,22 @@ public class QuoteRestClientNTest {
             }
             return params.stream();
     }
+
+    public MessageDTO getErrorResponse(HttpClientErrorException ex){
+        final String contentTypeValue = ex.getResponseHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
+        final MediaType contentType = MediaType.valueOf(contentTypeValue);
+        final byte[] bytes = ex.getResponseBodyAsByteArray();
+        if (MediaType.APPLICATION_JSON.equals(contentType)) {
+            return JsonUtil.instance().unmarshal(bytes, MessageDTO.class);
+        } else if (MediaType.APPLICATION_XML.equals(contentType)) {
+            return JsonUtil.instance().unmarshal(bytes, MessageDTO.class);
+        } else {
+            throw new IllegalArgumentException("unknown contentType: " + contentTypeValue);
+        }
+
+
+    }
+
 
     @ParameterizedTest
     @MethodSource("mediaTypes")
