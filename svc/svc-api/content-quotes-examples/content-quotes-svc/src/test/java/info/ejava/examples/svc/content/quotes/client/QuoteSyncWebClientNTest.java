@@ -37,6 +37,7 @@ import info.ejava.examples.content.quotes.dto.QuoteListDTO;
 import info.ejava.examples.content.quotes.util.JsonUtil;
 import info.ejava.examples.content.quotes.util.QuoteDTOFactory;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @SpringBootTest(classes = {ClientTestConfiguration.class, QuotesApplication.class},
                 webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -223,4 +224,94 @@ public class QuoteSyncWebClientNTest {
         BDDAssertions.then(existingQuotes).isEmpty();
 
     }
+
+    @ParameterizedTest
+    @MethodSource("mediaTypes")
+    void add_valid_quote(MediaType contentType, MediaType accept) {
+        // given / arrange - a valid quote
+        QuoteDTO validQuote = quoteDTOFactory.make();
+
+        // when / act 
+        ResponseEntity<QuoteDTO> response = webClient.post().uri(quotesUrl).accept(accept)
+                                                            .contentType(contentType)
+                                                            .bodyValue(validQuote)
+                                                            .retrieve().toEntity(QuoteDTO.class)
+                                                            .block();
+        
+        // then 
+        BDDAssertions.then(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        // that equals what we sent plus an id generated
+        
+        QuoteDTO createdQuote = response.getBody();
+        BDDAssertions.then(createdQuote).isEqualTo(validQuote.withId(createdQuote.getId()));
+        // a lcation response header referencing the URL for the created resources
+        URI location = UriComponentsBuilder.fromUri(baseUrl) .path(QuotesAPI.QUOTE_PATH).build(createdQuote.getId());
+        BDDAssertions.then(response.getHeaders().getFirst(HttpHeaders.LOCATION)).as("location error").isEqualTo(location.toString());
+    }
+
+    private QuoteDTO given_an_existing_quote(){
+        QuoteDTO existingQuote = quoteDTOFactory.make();
+        ResponseEntity<QuoteDTO> response = webClient.post().uri(quotesUrl).accept(MediaType.APPLICATION_JSON)
+                                                            .contentType(MediaType.APPLICATION_XML)
+                                                            .bodyValue(existingQuote)
+                                                            .retrieve().toEntity(QuoteDTO.class).block();
+        BDDAssertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        return response.getBody();
+    }
+
+    @Test
+    void update_existing_quote( ){
+        // given - an existing quote
+        QuoteDTO existingQuote = given_an_existing_quote();
+        int requestId = existingQuote.getId();
+
+        // and an update 
+        QuoteDTO updatedQuote = existingQuote.withText(existingQuote.getText() + "Updated ");
+
+        URI updateUri = UriComponentsBuilder.fromUri(baseUrl).path(QuotesAPI.QUOTE_PATH).build(existingQuote.getId());
+
+        // when - updating existing quote
+        ResponseEntity<Void> response = webClient.put().uri(updateUri).contentType(MediaType.APPLICATION_JSON)
+                                                        .bodyValue(updatedQuote)
+                                                        .retrieve().toEntity(Void.class)
+                                                        .block();
+
+        // then - evaluate / assert
+        BDDAssertions.then(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        URI getUri = UriComponentsBuilder.fromUri(baseUrl).path(QuotesAPI.QUOTE_PATH).build(requestId);
+        ResponseEntity<QuoteDTO> getUpdatedQuote = webClient.get().uri(getUri).retrieve().toEntity(QuoteDTO.class).block();
+
+        BDDAssertions.then(getUpdatedQuote.getStatusCode()).isEqualTo(HttpStatus.OK);
+        BDDAssertions.then(getUpdatedQuote.getBody()).isEqualTo(updatedQuote);
+        BDDAssertions.then(getUpdatedQuote.getBody()).isNotEqualTo(existingQuote);
+
+    }
+
+    @Test
+    void get_quote_1() {
+        // given / arrange
+        QuoteDTO existingQuote = quoteDTOFactory.make();
+        ResponseEntity<QuoteDTO> response = webClient.post()
+                                    .uri(UriComponentsBuilder.fromUri(baseUrl).path(QuotesAPI.QUOTES_PATH).build().toUri())
+                                    .bodyValue(existingQuote)
+                                    .retrieve().toEntity(QuoteDTO.class)
+                                    .block();
+        
+        BDDAssertions.then(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        int requestId = response.getBody().getId();
+
+        // when / act
+
+        ResponseEntity<QuoteDTO> getQuote = webClient.get()
+                                                .uri(UriComponentsBuilder.fromUri(baseUrl).path(QuotesAPI.QUOTE_PATH).build(requestId))
+                                                .retrieve().toEntity(QuoteDTO.class)
+                                                .block();
+
+        // then
+        BDDAssertions.then(getQuote.getStatusCode()).isEqualTo(HttpStatus.OK);
+        BDDAssertions.then(getQuote.getBody()).isEqualTo(existingQuote.withId(requestId));
+    }
+
+
 }
