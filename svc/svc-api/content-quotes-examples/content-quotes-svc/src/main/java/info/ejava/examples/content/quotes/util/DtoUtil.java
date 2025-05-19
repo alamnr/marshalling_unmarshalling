@@ -1,4 +1,4 @@
-package info.ejava.examples.svc.content.quotes.util;
+package info.ejava.examples.content.quotes.util;
 
 
 
