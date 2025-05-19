@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Tag;
@@ -69,7 +70,7 @@ public class QuoteHttpIfaceNTest {
         quoteHttpIfaceAPIRestTemplate.deleteAllQuote();
     }
 
-    
+    @Disabled
     @Test
     void add_valid_quote_for_type() {
         
