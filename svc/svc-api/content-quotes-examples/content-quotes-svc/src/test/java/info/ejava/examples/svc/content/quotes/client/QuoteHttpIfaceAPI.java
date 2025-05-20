@@ -45,8 +45,8 @@ public interface QuoteHttpIfaceAPI {
     //  ResponseEntity<Void> containsQuote(int id);
 
     @DeleteExchange(QuotesAPI.QUOTE_PATH)
-    ResponseEntity<Void> deleteAllQuote(@PathVariable("id") int id);
+    ResponseEntity<Void> deleteQuote(@PathVariable(name="id", required = true) int id);
 
     @DeleteExchange(QuotesAPI.QUOTES_PATH)
-    ResponseEntity<Void> deleteAllQuote();
+    ResponseEntity<Void> deleteAllQuotes();
 }

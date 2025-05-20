@@ -105,8 +105,9 @@ public class ClientTestConfiguration {
               // used to read the Stream twice -- so we can use the logging filter below
               () -> new BufferingClientHttpRequestFactory(requestFactory))
               .interceptors(List.of(new RestTemplateLoggingFilter())).build();
-        
+        System.out.println("base url - " + baseUrl.toString());    
         RestTemplate restTemplate = builder.rootUri(baseUrl.toString()).build();
+        
         restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
 
         RestTemplateAdapter adapter = RestTemplateAdapter.create(restTemplate);
@@ -116,17 +117,22 @@ public class ClientTestConfiguration {
     }
 
 
-    // @Bean @Lazy @Qualifier("restClientHttpIface")
-    // public QuoteHttpIfaceAPI quoteApiRestClient(RestClient restClient) {
-    //     RestClientAdapter adapter = RestClientAdapter.create(restClient);
-    //     HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
-    //     return factory.createClient(QuoteHttpIfaceAPI.class);
-    // }
+    @Bean @Lazy @Qualifier("restClientHttpIface")
+    public QuoteHttpIfaceAPI quoteApiRestClient(URI baseUrl,RestClient.Builder builder) {
+        builder.baseUrl(baseUrl);
+        RestClientAdapter adapter = RestClientAdapter.create(builder.build());
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        return factory.createClient(QuoteHttpIfaceAPI.class);
+    }
 
-    // @Bean @Lazy @Qualifier("webClientHttpIface")
-    // public QuoteHttpIfaceAPI quoteApiWebClient(WebClient webClient){
-    //     WebClientAdapter adapter = WebClientAdapter.create(webClient);
-    //     HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
-    //     return factory.createClient(QuoteHttpIfaceAPI.class);
-    // }
+    @Bean @Lazy @Qualifier("webClientHttpIface")
+    public QuoteHttpIfaceAPI quoteApiWebClient(URI baseUrl,WebClient.Builder builder){
+        builder.filter(WebClientLoggingFilter.requestFilter())
+                        .filter(WebClientLoggingFilter.responseFilter());
+        builder.baseUrl(baseUrl.toString());
+                            
+        WebClientAdapter adapter = WebClientAdapter.create(builder.build());
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        return factory.createClient(QuoteHttpIfaceAPI.class);
+    }
 }

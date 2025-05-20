@@ -16,9 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import info.ejava.examples.content.quotes.QuotesApplication;
+import info.ejava.examples.content.quotes.dto.QuoteDTO;
 import info.ejava.examples.content.quotes.util.QuoteDTOFactory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,10 +69,15 @@ public class QuoteHttpIfaceNTest {
     public void init(){
         log.info("baseUrl - {}", baseUrl);
         log.info("clear / delete all quotes");
-        quoteHttpIfaceAPIRestTemplate.deleteAllQuote();
+        
+        ResponseEntity<QuoteDTO> respons = quoteHttpIfaceAPIRestTemplate.getQuote(1);
+
+        //ResponseEntity<Void> resp =  quoteHttpIfaceAPIRestTemplate.deleteAllQuotes();
+
+
     }
 
-    @Disabled
+    //@Disabled
     @Test
     void add_valid_quote_for_type() {
         
