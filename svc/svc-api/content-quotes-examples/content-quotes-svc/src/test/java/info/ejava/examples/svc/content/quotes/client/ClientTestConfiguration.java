@@ -93,7 +93,7 @@ public class ClientTestConfiguration {
     @Bean @Lazy @Qualifier("restTemplateHttpIface")
     // This could be done with RestTemplate, RestClient or WebClient
     //public QuoteHttpIfaceAPI quoteApiRestTemplate(RestTemplate restTemplate ){
-    public QuoteHttpIfaceAPI quoteApiRestTemplate(URI baseUrl ){
+    public QuoteHttpIfaceAPI quoteApiRestTemplate(URI baseUrl, RestTemplateBuilder builder, ClientHttpRequestFactory requestFactory ){
         /*
          RestTemplate is the only client option that allows one to bypass the exception rule and obtain an
          error ResponseEntity from the call without exception handling. The following example shows a
@@ -101,8 +101,12 @@ public class ClientTestConfiguration {
          ResponseEntity without using exception handling.
          */
         //configure RestTemplate to return error responses, not exceptions
-
-        RestTemplate restTemplate = new RestTemplateBuilder().rootUri(baseUrl.toString()).build();
+         builder.requestFactory(
+              // used to read the Stream twice -- so we can use the logging filter below
+              () -> new BufferingClientHttpRequestFactory(requestFactory))
+              .interceptors(List.of(new RestTemplateLoggingFilter())).build();
+        
+        RestTemplate restTemplate = builder.rootUri(baseUrl.toString()).build();
         restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
 
         RestTemplateAdapter adapter = RestTemplateAdapter.create(restTemplate);
