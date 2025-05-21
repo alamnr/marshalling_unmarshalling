@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -25,6 +26,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import info.ejava.examples.common.web.ServerConfig;
 import info.ejava.examples.content.quotes.api.QuotesAPI;
+import info.ejava.examples.content.quotes.api.QuotesAPIWebClient;
+import info.ejava.examples.content.quotes.client.QuotesApiRestClientImpl;
+import info.ejava.examples.content.quotes.client.QuotesApiRestTemplateImpl;
+import info.ejava.examples.content.quotes.client.QuotesApiWebClientImpl;
 import info.ejava.examples.content.quotes.util.QuoteDTOFactory;
 import info.ejava.examples.svc.content.quotes.filter.RestTemplateLoggingFilter;
 import info.ejava.examples.svc.content.quotes.filter.WebClientLoggingFilter;
@@ -134,5 +139,42 @@ public class ClientTestConfiguration {
         WebClientAdapter adapter = WebClientAdapter.create(builder.build());
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(QuoteHttpIfaceAPI.class);
+    }
+
+
+    // Api client
+
+    @Bean @Lazy
+    @Qualifier("webClientApi")
+    public QuotesApiWebClientImpl quotesApiWebClientImpl(WebClient webClient, ServerConfig cfg) {
+        return new QuotesApiWebClientImpl(webClient, cfg);
+    }
+
+    @Bean @Lazy
+    public QuotesApiWebClientImpl quotesApiWebClient(WebClient webClient, ServerConfig serverConfig) {
+        return new QuotesApiWebClientImpl(webClient, serverConfig, MediaType.APPLICATION_JSON_VALUE);
+    }
+
+    @Bean @Lazy
+    @Qualifier("restClientApi")
+    public QuotesApiRestClientImpl quotesApiRestClientImpl(RestClient restClient, ServerConfig cfg) {
+        return new QuotesApiRestClientImpl(restClient, cfg);
+    }
+
+    @Bean @Lazy
+    public QuotesApiRestClientImpl quotesApiRestClient(RestClient restClient, ServerConfig serverConfig) {
+        return new QuotesApiRestClientImpl(restClient, serverConfig, MediaType.APPLICATION_JSON_VALUE);
+    }
+
+
+    @Bean @Lazy
+    @Qualifier("restTemplateApi")
+    public QuotesApiRestTemplateImpl quotesApiRestTemplateImpl(RestTemplate restTemplate, ServerConfig cfg) {
+        return new QuotesApiRestTemplateImpl(restTemplate, cfg);
+    }
+
+    @Bean @Lazy
+    public QuotesApiRestTemplateImpl quotesApiRestTemplate(RestTemplate restTemplate, ServerConfig serverConfig) {
+        return new QuotesApiRestTemplateImpl(restTemplate, serverConfig, MediaType.APPLICATION_JSON_VALUE);
     }
 }
