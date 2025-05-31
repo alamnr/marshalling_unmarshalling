@@ -94,17 +94,17 @@ public class ClientTestConfiguration {
     public URI quotesUrl(URI baseUrl) {
         return UriComponentsBuilder.fromUri(baseUrl).path(QuotesAPI.QUOTES_PATH).build().toUri();
     }
-
+/*
     @Bean @Lazy @Qualifier("restTemplateHttpIface")
     // This could be done with RestTemplate, RestClient or WebClient
     //public QuoteHttpIfaceAPI quoteApiRestTemplate(RestTemplate restTemplate ){
     public QuoteHttpIfaceAPI quoteApiRestTemplate(URI baseUrl, RestTemplateBuilder builder, ClientHttpRequestFactory requestFactory ){
-        /*
-         RestTemplate is the only client option that allows one to bypass the exception rule and obtain an
-         error ResponseEntity from the call without exception handling. The following example shows a
-         NoOpResponseErrorHandler error handler being put in place and the caller is receiving the error
-         ResponseEntity without using exception handling.
-         */
+        
+         //RestTemplate is the only client option that allows one to bypass the exception rule and obtain an
+         //error ResponseEntity from the call without exception handling. The following example shows a
+         //NoOpResponseErrorHandler error handler being put in place and the caller is receiving the error
+         //ResponseEntity without using exception handling.
+         
         //configure RestTemplate to return error responses, not exceptions
          builder.requestFactory(
               // used to read the Stream twice -- so we can use the logging filter below
@@ -120,7 +120,7 @@ public class ClientTestConfiguration {
         return factory.createClient(QuoteHttpIfaceAPI.class);
 
     }
-
+*/
 
     @Bean @Lazy @Qualifier("restClientHttpIface")
     public QuoteHttpIfaceAPI quoteApiRestClient(URI baseUrl,RestClient.Builder builder) {
@@ -128,6 +128,16 @@ public class ClientTestConfiguration {
         RestClientAdapter adapter = RestClientAdapter.create(builder.build());
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(QuoteHttpIfaceAPI.class);
+    }
+    @Bean @Lazy @Qualifier("restClientHttpIface_1")
+    public  QuoteHttpIfaceAPI quoteApiRestClient_1(URI baseUrl, RestTemplate restTemplate) {
+        RestClient restClient = RestClient.builder(restTemplate)
+                                .baseUrl(baseUrl.toString())
+                                .build();
+        RestClientAdapter adapter = RestClientAdapter.create(restClient);
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        return  factory.createClient(QuoteHttpIfaceAPI.class);
+
     }
 
     @Bean @Lazy @Qualifier("webClientHttpIface")

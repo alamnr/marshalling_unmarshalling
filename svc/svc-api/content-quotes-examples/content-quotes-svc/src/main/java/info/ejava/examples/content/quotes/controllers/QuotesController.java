@@ -57,7 +57,7 @@ public class QuotesController {
                      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE} )
     public ResponseEntity<QuoteDTO> createQuote(@RequestBody QuoteDTO quote){
     // public ResponseEntity<QuoteDTO> createQuote(RequestEntity<QuoteDTO> request){
-
+            
     //     QuoteDTO quote = request.getBody();
     //     log.info("CONTENT_TYPE= {}", request.getHeaders().get(HttpHeaders.CONTENT_TYPE));
     //     log.info("ACCEPT= {}", request.getHeaders().get(HttpHeaders.ACCEPT));
@@ -68,7 +68,7 @@ public class QuotesController {
 
         //ResponseEntity<QuoteDTO> response = ResponseEntity.status(HttpStatus.CREATED).location(uri).body(result);
         ResponseEntity<QuoteDTO> response = ResponseEntity.created(uri).body(result);
-
+        
         return response;
     }
 

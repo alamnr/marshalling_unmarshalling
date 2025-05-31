@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import info.ejava.examples.common.exception.ClientErrorException;
 import info.ejava.examples.common.exception.ClientErrorException.InvalidInputException;
 import info.ejava.examples.common.exception.ClientErrorException.NotFoundException;
 import info.ejava.examples.common.exception.ServerErrorException.InternalServerErrorException;
@@ -43,8 +44,8 @@ public class ExceptionAdvice {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<MessageDTO> handle(BadRequestException ex) {
+    @ExceptionHandler(ClientErrorException.BadRequestException.class)
+    public ResponseEntity<MessageDTO> handle(ClientErrorException.BadRequestException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

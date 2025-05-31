@@ -1,5 +1,6 @@
 package info.ejava.examples.svc.content.quotes.client;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,22 +18,35 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 public interface QuoteHttpIfaceAPI {
 
-    @PostExchange(QuotesAPI.QUOTES_PATH)
-    ResponseEntity<QuoteDTO> createQuote(@RequestBody(required = true) QuoteDTO quoteDTO);
+    @PostExchange(url =  QuotesAPI.QUOTES_PATH,
+                  contentType = MediaType.APPLICATION_JSON_VALUE,
+                  accept = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    ResponseEntity<QuoteDTO> createQuoteJson(@RequestBody(required = true) QuoteDTO quoteDTO);
 
-    @PutExchange(QuotesAPI.QUOTE_PATH)
+    @PostExchange(url =  QuotesAPI.QUOTES_PATH,
+                  contentType = MediaType.APPLICATION_XML_VALUE,
+                  accept = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    ResponseEntity<QuoteDTO> createQuoteXml(@RequestBody(required = true) QuoteDTO quoteDTO);
+
+
+    @PutExchange(url = QuotesAPI.QUOTE_PATH, 
+                contentType = MediaType.APPLICATION_JSON_VALUE,
+                accept = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Void> updateQuote(@PathVariable(name = "id" , required = true) int id , 
                                         @RequestBody(required = true)QuoteDTO quoteToUpdate);
 
     
-    @GetExchange(QuotesAPI.QUOTES_PATH)
+    @GetExchange(url = QuotesAPI.QUOTES_PATH,
+                    accept = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<QuoteListDTO> getQuotes(@RequestParam(name = "offset", defaultValue = "0")int offset,
                                             @RequestParam(name="limit", defaultValue = "0")int limit);
     
-    @GetExchange(QuotesAPI.QUOTE_PATH)
+    @GetExchange(url = QuotesAPI.QUOTE_PATH,
+                    accept = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<QuoteDTO> getQuote(@PathVariable(name = "id", required = true)int id);
 
-    @GetExchange(QuotesAPI.RANDOM_QUOTE_PATH)
+    @GetExchange(url = QuotesAPI.RANDOM_QUOTE_PATH, 
+                    accept = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<QuoteDTO> randomQuote();
 
     
@@ -41,12 +55,9 @@ public interface QuoteHttpIfaceAPI {
     ResponseEntity<Void> containsQuote(@PathVariable(name = "id", required = true)int id);
 
 
-    // @HttpExchange(method = RequestMethod.HEAD, url = QuotesAPI.QUOTE_PATH)    
-    //  ResponseEntity<Void> containsQuote(int id);
-
-    @DeleteExchange(QuotesAPI.QUOTE_PATH)
+    @DeleteExchange(url = QuotesAPI.QUOTE_PATH)
     ResponseEntity<Void> deleteQuote(@PathVariable(name="id", required = true) int id);
 
-    @DeleteExchange(QuotesAPI.QUOTES_PATH)
+    @DeleteExchange(url = QuotesAPI.QUOTES_PATH)
     ResponseEntity<Void> deleteAllQuotes();
 }
