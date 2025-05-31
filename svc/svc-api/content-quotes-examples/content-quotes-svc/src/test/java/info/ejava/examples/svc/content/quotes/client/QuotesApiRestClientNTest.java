@@ -1,6 +1,13 @@
 package info.ejava.examples.svc.content.quotes.client;
 
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.assertj.core.api.BDDAssertions.then;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -21,28 +28,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestClientResponseException;
-
 import org.springframework.web.util.UriComponentsBuilder;
 
 import info.ejava.examples.content.quotes.QuotesApplication;
 import info.ejava.examples.content.quotes.api.QuotesAPI;
 import info.ejava.examples.content.quotes.api.QuotesAPIRestClient;
-
 import info.ejava.examples.content.quotes.dto.MessageDTO;
 import info.ejava.examples.content.quotes.dto.QuoteDTO;
 import info.ejava.examples.content.quotes.dto.QuoteListDTO;
 import info.ejava.examples.content.quotes.util.JsonUtil;
 import info.ejava.examples.content.quotes.util.QuoteDTOFactory;
-import reactor.core.publisher.Mono;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
-import static org.assertj.core.api.BDDAssertions.then;
-import static org.springframework.web.reactive.function.client.WebClientResponseException.UnprocessableEntity;
+import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest(classes = {ClientTestConfiguration.class, QuotesApplication.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,

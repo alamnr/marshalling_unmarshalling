@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.BDDAssertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
@@ -31,9 +30,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestClientResponseException;
-import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import info.ejava.examples.content.quotes.QuotesApplication;
@@ -43,7 +40,6 @@ import info.ejava.examples.content.quotes.dto.QuoteDTO;
 import info.ejava.examples.content.quotes.dto.QuoteListDTO;
 import info.ejava.examples.content.quotes.util.JsonUtil;
 import info.ejava.examples.content.quotes.util.QuoteDTOFactory;
-import io.micrometer.core.ipc.http.HttpSender.Request;
 import lombok.extern.slf4j.Slf4j;
 
 /*

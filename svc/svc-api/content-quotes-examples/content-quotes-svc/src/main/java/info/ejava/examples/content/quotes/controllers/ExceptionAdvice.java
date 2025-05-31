@@ -1,15 +1,17 @@
 package info.ejava.examples.content.quotes.controllers;
 
-import org.apache.coyote.BadRequestException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import info.ejava.examples.common.exception.ClientErrorException;
+
+import info.ejava.examples.common.exception.ClientErrorException.BadRequestException;
 import info.ejava.examples.common.exception.ClientErrorException.InvalidInputException;
 import info.ejava.examples.common.exception.ClientErrorException.NotFoundException;
+import info.ejava.examples.common.exception.ServerErrorException;
 import info.ejava.examples.common.exception.ServerErrorException.InternalServerErrorException;
 import info.ejava.examples.content.quotes.dto.MessageDTO;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -44,8 +46,8 @@ public class ExceptionAdvice {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    @ExceptionHandler(ClientErrorException.BadRequestException.class)
-    public ResponseEntity<MessageDTO> handle(ClientErrorException.BadRequestException ex) {
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<MessageDTO> handle(BadRequestException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

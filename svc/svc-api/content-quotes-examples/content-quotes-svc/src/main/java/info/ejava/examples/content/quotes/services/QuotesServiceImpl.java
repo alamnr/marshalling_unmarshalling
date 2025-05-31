@@ -7,10 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import info.ejava.examples.common.exception.ClientErrorException;
 import info.ejava.examples.common.exception.ClientErrorException.BadRequestException;
 import info.ejava.examples.common.exception.ClientErrorException.InvalidInputException;
 import info.ejava.examples.common.exception.ClientErrorException.NotFoundException;
@@ -31,7 +29,8 @@ public class QuotesServiceImpl implements QuoteService {
     }
 
     protected void validate(QuoteDTO quote){
-        if(StringUtils.isEmpty(quote.getText())){
+        
+        if(StringUtils.isBlank(quote.getText())){
             throw new InvalidInputException("quote is missing required text");
         }
     }

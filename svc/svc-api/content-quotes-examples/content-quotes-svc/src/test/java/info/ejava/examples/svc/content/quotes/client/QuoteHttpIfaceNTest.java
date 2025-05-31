@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,16 +16,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestClientResponseException;
 
 import info.ejava.examples.content.quotes.QuotesApplication;
+import info.ejava.examples.content.quotes.client.QuoteHttpIfaceImpl;
 import info.ejava.examples.content.quotes.dto.MessageDTO;
 import info.ejava.examples.content.quotes.dto.QuoteDTO;
+
 import info.ejava.examples.content.quotes.util.JsonUtil;
 import info.ejava.examples.content.quotes.util.QuoteDTOFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +48,7 @@ public class QuoteHttpIfaceNTest {
      @Autowired 
      //@Qualifier("restClientHttpIface")
      @Qualifier("restClientHttpIface_1")
-     private QuoteHttpIfaceAPI quoteHttpIfaceAPIRestClient;
+     private QuoteHttpIfaceImpl quoteHttpIfaceAPIRestClient;
 
     @Autowired
     private URI baseUrl;
@@ -93,8 +91,6 @@ public class QuoteHttpIfaceNTest {
 
     @BeforeEach
     public void init(){
-        log.info("baseUrl - {}", baseUrl);
-        log.info("clear / delete all quotes");
         
         //ResponseEntity<QuoteDTO> respons = quoteHttpIfaceAPIRestTemplate.getQuote(1);
         ResponseEntity<QuoteDTO> respons = quoteHttpIfaceAPIRestClient.getQuote(1);

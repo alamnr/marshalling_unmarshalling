@@ -1,6 +1,13 @@
 package info.ejava.examples.svc.content.quotes.client;
 
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.assertj.core.api.BDDAssertions.then;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -31,16 +38,8 @@ import info.ejava.examples.content.quotes.dto.QuoteDTO;
 import info.ejava.examples.content.quotes.dto.QuoteListDTO;
 import info.ejava.examples.content.quotes.util.JsonUtil;
 import info.ejava.examples.content.quotes.util.QuoteDTOFactory;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
-import static org.assertj.core.api.BDDAssertions.then;
-import static org.springframework.web.reactive.function.client.WebClientResponseException.UnprocessableEntity;
 
 @SpringBootTest(classes = {ClientTestConfiguration.class, QuotesApplication.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,

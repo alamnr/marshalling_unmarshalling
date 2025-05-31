@@ -30,12 +30,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import info.ejava.examples.content.quotes.QuotesApplication;
@@ -46,7 +42,6 @@ import info.ejava.examples.content.quotes.dto.QuoteListDTO;
 import info.ejava.examples.content.quotes.util.JsonUtil;
 import info.ejava.examples.content.quotes.util.QuoteDTOFactory;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Mono;
 
 @SpringBootTest(classes = {ClientTestConfiguration.class,QuotesApplication.class},
                 webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
