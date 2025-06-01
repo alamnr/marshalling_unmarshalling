@@ -22,11 +22,13 @@ public interface QuoteHttpIfaceImpl  {
     @PostExchange(url =  QuotesAPI.QUOTES_PATH,
                   contentType = MediaType.APPLICATION_JSON_VALUE,
                   accept = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+                  //accept = {MediaType.APPLICATION_JSON_VALUE})
     ResponseEntity<QuoteDTO> createQuoteJson(@RequestBody QuoteDTO quoteDTO);
 
     @PostExchange(url =  QuotesAPI.QUOTES_PATH,
                   contentType = MediaType.APPLICATION_XML_VALUE,
                   accept = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+                  //accept = {MediaType.APPLICATION_XML_VALUE})
     ResponseEntity<QuoteDTO> createQuoteXml(@RequestBody QuoteDTO quoteDTO);
 
 
