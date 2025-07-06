@@ -1,5 +1,7 @@
 package info.ejava.examples.content.quotes.dto;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -14,7 +16,6 @@ import java.util.Date;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.BDDAssertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +24,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import info.ejava.examples.common.time.ISODateFormat;
 import lombok.extern.slf4j.Slf4j;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 public class DateTest {

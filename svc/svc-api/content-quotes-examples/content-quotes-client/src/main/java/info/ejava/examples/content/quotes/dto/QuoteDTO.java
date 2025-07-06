@@ -36,7 +36,8 @@ public class QuoteDTO {
     private int id;
     private String author;
     private String text;
-    @XmlJavaTypeAdapter(JaxbTimeAdapters.LocalDateJaxbAdapter.class) // JAXB local date adapters since JAXB does not hav that default
+    @XmlJavaTypeAdapter(JaxbTimeAdapters.LocalDateJaxbAdapter.class) 
+    // JAXB local date adapters since JAXB does not have that default
     private LocalDate date;
 
     @JsonIgnore // Jackson
