@@ -1,0 +1,18 @@
+package info.ejava.examples.svc.authn.authcfg.security.legacy;
+
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+
+
+public class ApiSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/content/**");
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.requestMatchers(m->m.antMatchers("/api/anonymous/**","/api/authn/**"));
+    }
+
+}
