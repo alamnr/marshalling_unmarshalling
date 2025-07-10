@@ -1,0 +1,17 @@
+package info.ejava.examples.svc.authn.authcfg.security.legacy;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
+@Configuration(proxyBeanMethods = false)
+@Order(100)
+public class SwaggerSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.requestMatchers(cfg->cfg.antMatchers("/swagger-ui*","/swagger-ui/**","/v3/api-docs/**"));
+        http.authorizeHttpRequests(cfg->cfg.anyRequest().permitAll());
+        http.csrf().disable();
+    }
+}
