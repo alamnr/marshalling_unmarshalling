@@ -21,6 +21,7 @@
         <module>noauthn-security-example</module>
         <module>authn-config-example</module>
         <module>authn-users-example</module>
+        <module>authz-authorities-example</module>
         
     </modules>
 </project>
