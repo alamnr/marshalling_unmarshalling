@@ -4,9 +4,14 @@ import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.access.hierarchicalroles.NullRoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authorization.AuthorityAuthorizationDecision;
 import org.springframework.security.authorization.AuthorityAuthorizationManager;
@@ -46,8 +51,8 @@ public class ComponentBasedSecurityConfiguration {
 
     @Bean
     @Order(0)
-    //public SecurityFilterChain authzSecurityFilterChain(HttpSecurity http, RoleHierarchy roleHierarchy) throws Exception {
-    public SecurityFilterChain authzSecurityFilterChain(HttpSecurity http) throws Exception {
+    //public SecurityFilterChain authzSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain authzSecurityFilterChain(HttpSecurity http, RoleHierarchy roleHierarchy) throws Exception {
         http.securityMatchers(cfg-> cfg.requestMatchers("/api/**"));
         http.authorizeHttpRequests(cfg-> cfg.requestMatchers("/api/whoAmI","/api/authorities/paths/anonymous/**").permitAll());
         http.authorizeHttpRequests(cfg->cfg.requestMatchers("/api/authorities/paths/admin/**").hasRole("ADMIN"));
@@ -145,5 +150,45 @@ public class ComponentBasedSecurityConfiguration {
         return jdbcUds;
     }
 
-    
+    //needed mid-way thru lecture
+    @Bean
+    @Profile("roleInheritance")
+    static RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.withDefaultRolePrefix()
+                .role("ADMIN").implies("CLERK")
+                .role("CLERK").implies("CUSTOMER")
+                .build();
+//legacy
+//        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+//        roleHierarchy.setHierarchy(StringUtils.join(List.of(
+//                "ROLE_ADMIN > ROLE_CLERK",
+//                "ROLE_CLERK > ROLE_CUSTOMER"
+//        ),System.lineSeparator()));
+//        return roleHierarchy;
+    }
+
+    /**
+     * Creates a default RoleHierachy when the examples want straight roles.
+     */
+    @Bean
+    @Profile("!roleInheritance")
+    static RoleHierarchy nullHierarchy() {
+        return new NullRoleHierarchy();
+    }
+
+    /**
+     * Creates a custom MethodExpressionHandler that will be picked up by
+     * Expression-based security to support RoleInheritance.
+     * This is required until the
+     * <a href="github.com/spring-projects/spring-security/issues/12783">the following</a>
+     * is resolved.
+     */
+    //we are using Spring 6.1.11 with ***Spring Security 6.3.1***
+    //@Bean
+    static MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy, ApplicationContext context) {
+        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+        expressionHandler.setRoleHierarchy(roleHierarchy);
+        expressionHandler.setApplicationContext(context);
+        return expressionHandler;
+    }    
 }
