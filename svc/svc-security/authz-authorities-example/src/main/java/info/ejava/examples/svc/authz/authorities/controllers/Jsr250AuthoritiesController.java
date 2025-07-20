@@ -44,7 +44,7 @@ public class Jsr250AuthoritiesController {
     }
 
     //@RolesAllowed({"ROLE_ADMIN","ROLE_CLERK","PRICE_CHECK"}) // spring 5
-    @RolesAllowed({"ADMIN","CLERK","PRICE_CHECK"}) // spring 6
+    @RolesAllowed({"ADMIN","CLERK","PRICE_CHECK"}) // spring 6  note : point to be noted @RolesAllowed does not support permission authority
     @GetMapping(path = "price", produces = {MediaType.TEXT_PLAIN_VALUE})
     public ResponseEntity<String> checkPrice(@Parameter(hidden = true)@AuthenticationPrincipal UserDetails user){
         return whoAmI.getCallerInfo(user);

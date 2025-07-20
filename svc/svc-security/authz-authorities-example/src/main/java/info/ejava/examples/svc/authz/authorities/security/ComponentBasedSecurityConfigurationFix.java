@@ -37,14 +37,14 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
-// @Configuration(proxyBeanMethods = false)
-// @EnableMethodSecurity(
-//     prePostEnabled = true, // @PreAuthorize("hasAuthority('ROLE_ADMIN')"), @PreAuthorize("hasRole('ADMIN')")
-//     jsr250Enabled = true, // @RolesAllowed({"MANAGER"})
-//     securedEnabled = true // @Secured({"ROLE_MEMBER"})
+@Configuration(proxyBeanMethods = false)
+@EnableMethodSecurity(
+    prePostEnabled = true, // @PreAuthorize("hasAuthority('ROLE_ADMIN')"), @PreAuthorize("hasRole('ADMIN')")
+    jsr250Enabled = true, // @RolesAllowed({"MANAGER"})
+    securedEnabled = true // @Secured({"ROLE_MEMBER"})
 
-// )
-// @RequiredArgsConstructor
+)
+@RequiredArgsConstructor
 public class ComponentBasedSecurityConfigurationFix {
 
     /**
@@ -94,7 +94,9 @@ public class ComponentBasedSecurityConfigurationFix {
         http.authorizeHttpRequests(cfg -> cfg.requestMatchers(mvc.pattern("/api/authorities/paths/customer/**"))
                                         //.access(AuthorityAuthorizationManager.hasAnyRole("CUSTOMER"))
                                         //.access(withRoleHierarchy.apply(AuthorityAuthorizationManager.hasAnyAuthority("ROLE_CUSTOMER"))) // + RoleHierArchy
-                                        .hasAnyRole("CUSTOMER"))   ;
+                                        .access(withRoleHierarchy.apply(AuthorityAuthorizationManager.hasAnyRole("CUSTOMER"))) // + RoleHierArchy
+                                        //.hasAnyRole("CUSTOMER")
+                                        );
         http.authorizeHttpRequests(cfg-> cfg.requestMatchers(mvc.pattern(HttpMethod.GET, "/api/authorities/paths/price"))
                                 // .access(AuthorizationManagers.anyOf( //not using RoleHierachy
                                 //         AuthorityAuthorizationManager.hasAuthority("PRICE_CHECK"),

@@ -2,6 +2,7 @@ package info.ejava.examples.svc.authz.authorities.security;
 
 import javax.sql.DataSource;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -13,6 +14,7 @@ import org.springframework.security.access.hierarchicalroles.NullRoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
 import org.springframework.security.authorization.AuthorityAuthorizationDecision;
 import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.authorization.AuthorizationManager;
@@ -35,13 +37,13 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
-@Configuration(proxyBeanMethods=false)
-@EnableMethodSecurity(
-    prePostEnabled = true,   // @PreAuthorize("hasAuthority('ROLE_ADMIN')"), @PreAuthorize("hasRole('ADMIN')")
-    jsr250Enabled = true,   // @RolesAllowed({"MANAGER"}) - spring security - 6 @RolesAllowed({"ROLE_MANAGER"}) - Spring Security-5
-    securedEnabled = true  // @Secured("ROLE_ADMIN") @SeCured({"ROLE_ADMIN", "ROLE_MANAGER"})
-)
-@RequiredArgsConstructor
+// @Configuration(proxyBeanMethods=false)
+// @EnableMethodSecurity(
+//     prePostEnabled = true,   // @PreAuthorize("hasAuthority('ROLE_ADMIN')"), @PreAuthorize("hasRole('ADMIN')")
+//     jsr250Enabled = true,   // @RolesAllowed({"MANAGER"}) - spring security - 6 @RolesAllowed({"ROLE_MANAGER"}) - Spring Security-5
+//     securedEnabled = true  // @Secured("ROLE_ADMIN") @SeCured({"ROLE_ADMIN", "ROLE_MANAGER"})
+// )
+// @RequiredArgsConstructor
 public class ComponentBasedSecurityConfiguration {
 
     @Bean
@@ -67,7 +69,12 @@ public class ComponentBasedSecurityConfiguration {
                     .hasAnyAuthority("PRICE_CHECK","ROLE_ADMIN","ROLE_CLERK"));
         
         http.authorizeHttpRequests(cfg->cfg.requestMatchers("/api/authorities/paths/nobody/**").denyAll());
-        http.authorizeHttpRequests(cfg->cfg.requestMatchers("/api/authorities/paths/authn/**").authenticated()); // thru customizer.builder
+        http.authorizeHttpRequests(cfg->cfg.requestMatchers("/api/authorities/paths/authn/**")
+        
+                                    //.access(new AuthenticatedAuthorizationManager<>()) // using ctor (constructor)
+                                    //.access(AuthenticatedAuthorizationManager.authenticated()) // thru builder
+                                    .authenticated()  // thru customizer.builder
+                                ); 
 
         // these requests are handaled by class/method annotations
         http.authorizeHttpRequests(cfg->cfg.requestMatchers("/api/authorities/secured/**",
