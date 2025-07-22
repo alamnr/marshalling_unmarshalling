@@ -22,6 +22,7 @@
         <module>authn-config-example</module>
         <module>authn-users-example</module>
         <module>authz-authorities-example</module>
+        <module>https-hello-example</module>
         
     </modules>
 </project>
