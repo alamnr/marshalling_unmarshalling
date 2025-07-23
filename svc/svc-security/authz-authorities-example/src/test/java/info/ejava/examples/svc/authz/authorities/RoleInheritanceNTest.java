@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
@@ -16,12 +17,21 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("roleInheritance")
+import info.ejava.examples.common.web.ServerConfig;
+import lombok.extern.slf4j.Slf4j;
+
+@SpringBootTest(classes = {ClientTestConfiguration.class},
+                webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+//@ActiveProfiles("roleInheritance")  // without https 
+@ActiveProfiles({"roleInheritance","https","ntest"}) // with https
+@Slf4j
 public class RoleInheritanceNTest {
 
+    @Autowired @Qualifier("client")
+    private TestRestTemplate client; //automatically tracks @LocalPort
     @Autowired
-    private TestRestTemplate client; // automatically tracks @LocalPort
+    private ServerConfig serverConfig;
+
 
     void can_access_customer(String baseUri, String username, List<String> auths){
         // given 
@@ -90,7 +100,7 @@ public class RoleInheritanceNTest {
 
     @Nested 
     class path_constraint_test  extends MethodSources {
-        final String uri = "/api/authorities/paths";
+        final String uri = serverConfig.getBaseUrl().toString() + "/api/authorities/paths";
 
         @ParameterizedTest
         @MethodSource("user_auths")
@@ -115,7 +125,7 @@ public class RoleInheritanceNTest {
     // @Secured now supports RoleHierArchy (verified in 3.3.2)
     // https://github.com/spring-projects/spring-security/issues/12783
     class secured extends MethodSources {
-        final String uri = "/api/authorities/secured";
+        final String uri = serverConfig.getBaseUrl().toString() + "/api/authorities/secured";
 
         @ParameterizedTest
         @MethodSource("user_auths")
@@ -140,7 +150,7 @@ public class RoleInheritanceNTest {
     //Jsr250 now supports RoleHierarchy (verified in 3.3.2)
     //https://github.com/spring-projects/spring-security/issues/12782
     class jsr250 extends MethodSources {
-        final String uri = "/api/authorities/jsr250";
+        final String uri = serverConfig.getBaseUrl().toString() + "/api/authorities/jsr250";
 
         @ParameterizedTest
         @MethodSource("user_auths")
@@ -161,7 +171,7 @@ public class RoleInheritanceNTest {
 
      @Nested
     class expression extends MethodSources {
-        final String uri = "/api/authorities/expressions";
+        final String uri = serverConfig.getBaseUrl().toString() + "/api/authorities/expressions";
 
         @ParameterizedTest
         @MethodSource("user_auths")

@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpMethod;
@@ -17,6 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.test.context.ActiveProfiles;
 
+import info.ejava.examples.common.web.ServerConfig;
+import lombok.extern.slf4j.Slf4j;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -24,11 +28,17 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = {ClientTestConfiguration.class},
+                webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles({"https","ntest"})
+@Slf4j
 public class AuthzTestRestTemplateNTest {
-    @Autowired
+    @Autowired @Qualifier("client")
     private TestRestTemplate client; //automatically tracks @LocalPort
-    private static String whoAmIURI = "/api/whoAmI";
+    @Autowired
+    private ServerConfig serverConfig;
+
+    private static String whoAmIURI =   "/api/whoAmI";
     private static String pathsURI = "/api/authorities/paths";
     private static String securedURI = "/api/authorities/secured";
     private static String jsr250URI = "/api/authorities/jsr250";
@@ -37,10 +47,10 @@ public class AuthzTestRestTemplateNTest {
     @ParameterizedTest
     @MethodSource("user_auths")
     void has_roles(String username, List<String> roles) throws URISyntaxException {
-        //given
+        //given 
         client = client.withBasicAuth(username, "password");
         String expectedResponse = String.format("[%s, %s]", username, roles);
-        RequestEntity request = RequestEntity.get(whoAmIURI).build();
+        RequestEntity request = RequestEntity.get(serverConfig.getBaseUrl().toString() + whoAmIURI).build();
         //when
         ResponseEntity<String> response = client.exchange(request, String.class);
         //then
@@ -62,7 +72,7 @@ public class AuthzTestRestTemplateNTest {
             //given
             client = client.withBasicAuth(username, "password");
             boolean canAccess = requiredAuthority.stream().filter(a->auths.contains(a)).findFirst().isPresent();
-            RequestEntity request = RequestEntity.get(pathsURI + "/" + endpoint).build();
+            RequestEntity request = RequestEntity.get(serverConfig.getBaseUrl().toString() + pathsURI + "/" + endpoint).build();
             //when
             ResponseEntity<String> response = client.exchange(request, String.class);
             //then
@@ -75,7 +85,7 @@ public class AuthzTestRestTemplateNTest {
             //given
             client = client.withBasicAuth(username, "password");
             boolean canAccess = auths.contains("PRICE_CHECK") || auths.contains("ROLE_ADMIN") || auths.contains("ROLE_CLERK");
-            RequestEntity request = RequestEntity.get(pathsURI + "/price").build();
+            RequestEntity request = RequestEntity.get(serverConfig.getBaseUrl().toString() + pathsURI + "/price").build();
             //when
             ResponseEntity<String> response = client.exchange(request, String.class);
             //then
@@ -109,7 +119,7 @@ public class AuthzTestRestTemplateNTest {
             //given
             client = client.withBasicAuth(username, "password");
             boolean canAccess = requiredAuthority.stream().filter(a->auths.contains(a)).findFirst().isPresent();
-            RequestEntity request = RequestEntity.get(securedURI + "/" + endpoint).build();
+            RequestEntity request = RequestEntity.get(serverConfig.getBaseUrl().toString() + securedURI + "/" + endpoint).build();
             //when
             ResponseEntity<String> response = client.exchange(request, String.class);
             //then
@@ -122,7 +132,7 @@ public class AuthzTestRestTemplateNTest {
             //given
             client = client.withBasicAuth(username, "password");
             boolean canAccess = auths.contains("PRICE_CHECK") || auths.contains("ROLE_ADMIN") || auths.contains("ROLE_CLERK");
-            RequestEntity request = RequestEntity.get(securedURI + "/price").build();
+            RequestEntity request = RequestEntity.get(serverConfig.getBaseUrl().toString() + securedURI + "/price").build();
             //when
             ResponseEntity<String> response = client.exchange(request, String.class);
             //then
@@ -154,7 +164,7 @@ public class AuthzTestRestTemplateNTest {
             //given
             client = client.withBasicAuth(username, "password");
             boolean canAccess = requiredAuthority.stream().filter(a->auths.contains(a)).findFirst().isPresent();
-            RequestEntity request = RequestEntity.get(jsr250URI + "/" + endpoint).build();
+            RequestEntity request = RequestEntity.get(serverConfig.getBaseUrl().toString() + jsr250URI + "/" + endpoint).build();
             //when
             ResponseEntity<String> response = client.exchange(request, String.class);
             //then
@@ -167,7 +177,7 @@ public class AuthzTestRestTemplateNTest {
             //given
             client = client.withBasicAuth(username, "password");
             boolean canAccess = auths.contains("PRICE_CHECK") || auths.contains("ROLE_ADMIN") || auths.contains("ROLE_CLERK");
-            RequestEntity request = RequestEntity.get(jsr250URI + "/price").build();
+            RequestEntity request = RequestEntity.get(serverConfig.getBaseUrl().toString() + jsr250URI + "/price").build();
             //when
             ResponseEntity<String> response = client.exchange(request, String.class);
             //then
@@ -202,7 +212,7 @@ public class AuthzTestRestTemplateNTest {
             //given
             client = client.withBasicAuth(username, "password");
             boolean canAccess = requiredAuthority.stream().filter(a->auths.contains(a)).count()>0;
-            RequestEntity request = RequestEntity.get(expressionsURI + "/" + endpoint).build();
+            RequestEntity request = RequestEntity.get(serverConfig.getBaseUrl().toString() + expressionsURI + "/" + endpoint).build();
             //when
             ResponseEntity<String> response = client.exchange(request, String.class);
             //then
@@ -215,7 +225,7 @@ public class AuthzTestRestTemplateNTest {
             //given
             client = client.withBasicAuth(username, "password");
             boolean canAccess = auths.contains("PRICE_CHECK") || auths.contains("ROLE_ADMIN") || auths.contains("ROLE_CLERK");
-            RequestEntity request = RequestEntity.get(expressionsURI + "/price").build();
+            RequestEntity request = RequestEntity.get(serverConfig.getBaseUrl().toString() + expressionsURI + "/price").build();
             //when
             ResponseEntity<String> response = client.exchange(request, String.class);
             //then
@@ -245,7 +255,7 @@ public class AuthzTestRestTemplateNTest {
         //given
         client = client.withBasicAuth(username, "password");
         boolean canAccess = auths.contains("ROLE_CUSTOMER");
-        RequestEntity request = RequestEntity.get(pathsURI + "/customer").build();
+        RequestEntity request = RequestEntity.get(serverConfig.getBaseUrl().toString() + pathsURI + "/customer").build();
         //when
         ResponseEntity<String> response = client.exchange(request, String.class);
         //then

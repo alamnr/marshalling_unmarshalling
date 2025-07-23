@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest(classes = {ClientTestConfiguration.class},
                 webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"https","ntest"})
+@ActiveProfiles({"https","ntest"}) // for running test with http sceme just comment the @ActiveProfile
 @Slf4j
 public class HttpsRestTemplateNTest {
  
