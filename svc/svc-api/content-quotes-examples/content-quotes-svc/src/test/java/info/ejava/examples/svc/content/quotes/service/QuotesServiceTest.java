@@ -14,10 +14,10 @@ import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import info.ejava.examples.common.exception.ClientErrorException;
-import info.ejava.examples.common.exception.ClientErrorException.BadRequestException;
-import info.ejava.examples.common.exception.ClientErrorException.InvalidInputException;
-import info.ejava.examples.common.exception.ClientErrorException.NotFoundException;
+import info.ejava.examples.common.exceptions.ClientErrorException;
+import info.ejava.examples.common.exceptions.ClientErrorException.BadRequestException;
+import info.ejava.examples.common.exceptions.ClientErrorException.InvalidInputException;
+import info.ejava.examples.common.exceptions.ClientErrorException.NotFoundException;
 import info.ejava.examples.content.quotes.dto.QuoteDTO;
 import info.ejava.examples.content.quotes.dto.QuoteListDTO;
 import info.ejava.examples.content.quotes.services.QuoteService;

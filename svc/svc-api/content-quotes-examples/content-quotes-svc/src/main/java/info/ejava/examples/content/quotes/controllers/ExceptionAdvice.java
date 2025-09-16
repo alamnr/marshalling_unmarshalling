@@ -7,12 +7,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-
-import info.ejava.examples.common.exception.ClientErrorException.BadRequestException;
-import info.ejava.examples.common.exception.ClientErrorException.InvalidInputException;
-import info.ejava.examples.common.exception.ClientErrorException.NotFoundException;
-import info.ejava.examples.common.exception.ServerErrorException;
-import info.ejava.examples.common.exception.ServerErrorException.InternalServerErrorException;
+import info.ejava.examples.common.exceptions.ClientErrorException.BadRequestException;
+import info.ejava.examples.common.exceptions.ClientErrorException.InvalidInputException;
+import info.ejava.examples.common.exceptions.ClientErrorException.NotFoundException;
+import info.ejava.examples.common.exceptions.ServerErrorException.InternalErrorException;
 import info.ejava.examples.content.quotes.dto.MessageDTO;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
@@ -51,8 +49,8 @@ public class ExceptionAdvice {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler(InternalServerErrorException.class)
-    public ResponseEntity<MessageDTO> handle(InternalServerErrorException ex) {
+    @ExceptionHandler(InternalErrorException.class)
+    public ResponseEntity<MessageDTO> handle(InternalErrorException ex) {
         log.warn("{}  , exception trace - {}", ex.getMessage(),ex);
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }

@@ -9,10 +9,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import info.ejava.examples.common.exception.ClientErrorException.BadRequestException;
-import info.ejava.examples.common.exception.ClientErrorException.InvalidInputException;
-import info.ejava.examples.common.exception.ClientErrorException.NotFoundException;
-import info.ejava.examples.common.exception.ServerErrorException.InternalServerErrorException;
+
+import info.ejava.examples.common.exceptions.ClientErrorException.BadRequestException;
+import info.ejava.examples.common.exceptions.ClientErrorException.InvalidInputException;
+import info.ejava.examples.common.exceptions.ClientErrorException.NotFoundException;
+import info.ejava.examples.common.exceptions.ServerErrorException.InternalErrorException;
 import info.ejava.examples.content.quotes.dto.QuoteDTO;
 import info.ejava.examples.content.quotes.dto.QuoteListDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -93,7 +94,7 @@ public class QuotesServiceImpl implements QuoteService {
             }
         }
 
-        throw new InternalServerErrorException(" error trying to locate random quote - [%d]",randomIndex);
+        throw new InternalErrorException(" error trying to locate random quote - [%d]",randomIndex);
     }
 
     public void validatePaging(int offset, int limit ){

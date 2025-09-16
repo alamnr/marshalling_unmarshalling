@@ -18,6 +18,7 @@
     <modules>
         <module>svc-api</module>
         <module>svc-security</module>
+        <module>svc-aop</module>
     </modules>
 
 
